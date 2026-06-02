@@ -1,0 +1,1 @@
+# Documentación de Sentry Log
