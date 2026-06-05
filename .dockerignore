@@ -1,0 +1,6 @@
+.git
+.env
+.gitignore
+*.md
+data/logs/*
+data/reports/*

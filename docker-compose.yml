@@ -1,0 +1,33 @@
+services:
+  # Tu servidor donde vive Sentry Log
+  hermes:
+    build: .
+    container_name: hermes
+    restart: unless-stopped
+
+    volumes:
+      - ./data/logs:/var/log/sentry
+    # Permite probar SSH localmente con: ssh profesor@localhost -p 2222
+    ports:
+      - "2222:22"
+    # Exponemos el puerto 22 internamente para que Cloudflared lo encuentre
+    expose:
+      - "22"
+    networks:
+      - sentry_net
+
+  # El mensajero profesional de Cloudflare
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    depends_on:
+      - hermes
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN:?TUNNEL_TOKEN es requerido}
+    networks:
+      - sentry_net
+
+networks:
+  sentry_net:
+    driver: bridge
