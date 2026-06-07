@@ -12,12 +12,11 @@ CHECKSUM_BIN := $(BIN_DIR)/checksum
 
 SCRIPTS := \
 	$(SCRIPTS_DIR)/admin.sh \
-	$(SCRIPTS_DIR)/user_manager.sh \
-	$(SCRIPTS_DIR)/group_manager.sh \
-	$(SCRIPTS_DIR)/permission_manager.sh \
-	$(SCRIPTS_DIR)/provision_departments.sh \
-	$(SCRIPTS_DIR)/ssh_access_audit.sh \
-	$(SCRIPTS_DIR)/security_monitor.sh \
+	$(SCRIPTS_DIR)/setup_server.sh \
+	$(SCRIPTS_DIR)/users.sh \
+	$(SCRIPTS_DIR)/permissions.sh \
+	$(SCRIPTS_DIR)/ssh_audit.sh \
+	$(SCRIPTS_DIR)/monitor.sh \
 	$(SCRIPTS_DIR)/log_analyzer.sh
 
 .PHONY: all build clean test check scripts docker-config docker-build up down logs help
