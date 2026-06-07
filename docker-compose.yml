@@ -1,5 +1,4 @@
 services:
-  # Tu servidor donde vive Sentry Log
   hermes:
     build: .
     container_name: hermes
@@ -7,16 +6,13 @@ services:
 
     volumes:
       - ./data/logs:/var/log/sentry
-    # Permite probar SSH localmente con: ssh profesor@localhost -p 2222
     ports:
       - "2222:22"
-    # Exponemos el puerto 22 internamente para que Cloudflared lo encuentre
     expose:
       - "22"
     networks:
       - sentry_net
 
-  # El mensajero profesional de Cloudflare
   cloudflared:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
