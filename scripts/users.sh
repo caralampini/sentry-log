@@ -11,6 +11,9 @@ uso() {
 
 crear_usuario() {
   local user="$1" group="$2"
+  [[ -n "$user" && -n "$group" ]] || { echo "Falta usuario o grupo"; exit 1; }
+  [[ "$user" =~ ^[a-z_][a-z0-9_-]*$ ]] || { echo "Usuario invalido: $user"; exit 1; }
+  [[ "$group" =~ ^[a-z_][a-z0-9_-]*$ ]] || { echo "Grupo invalido: $group"; exit 1; }
   id "$user" > /dev/null 2>&1 && { echo "El usuario $user ya existe"; return; }
   getent group "$group" > /dev/null || { echo "No existe el grupo $group"; exit 1; }
   useradd -m -s /bin/bash -g "$group" "$user"
@@ -47,6 +50,7 @@ case "$cmd" in
     [[ "$EUID" -eq 0 ]] || { echo "Usa sudo"; exit 1; }
     group="${2:-}"
     [[ -n "$group" ]] || { echo "Falta el grupo"; exit 1; }
+    [[ "$group" =~ ^[a-z_][a-z0-9_-]*$ ]] || { echo "Grupo invalido: $group"; exit 1; }
     getent group "$group" > /dev/null && { echo "El grupo $group ya existe"; exit 0; }
     groupadd "$group"
     echo "Grupo creado: $group"

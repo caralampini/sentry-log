@@ -1,6 +1,39 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -uo pipefail
+
+mostrar_grupos() {
+  echo "Grupos de la empresa configurados:"
+  while IFS=: read -r dept group path mode; do
+    [[ -z "${dept:-}" || "$dept" =~ ^# ]] && continue
+    echo "  $group ($dept)"
+  done < config/departments.conf
+  echo
+}
+
+crear_usuario() {
+  local u g crear
+
+  read -r -p "Usuario: " u
+  mostrar_grupos
+  read -r -p "Grupo: " g
+
+  if ! getent group "$g" > /dev/null; then
+    echo "El grupo '$g' no existe."
+    read -r -p "Quieres crearlo ahora? [s/N]: " crear
+    case "$crear" in
+      s|S|si|SI)
+        sudo ./scripts/users.sh grupo-crear "$g" || return
+        ;;
+      *)
+        echo "Usuario no creado. Primero crea o elige un grupo existente."
+        return
+        ;;
+    esac
+  fi
+
+  sudo ./scripts/users.sh crear "$u" "$g"
+}
 
 while true; do
   clear
@@ -25,12 +58,12 @@ while true; do
 
   case "$op" in
     1) sudo ./scripts/setup_server.sh ;;
-    2) read -r -p "Usuario: " u; read -r -p "Grupo: " g; sudo ./scripts/users.sh crear "$u" "$g" ;;
-    3) read -r -p "Usuario: " u; sudo ./scripts/users.sh eliminar "$u" ;;
+    2) crear_usuario ;;
+    3) read -r -p "Usuario: " u; sudo ./scripts/users.sh eliminar "$u" || true ;;
     4) ./scripts/users.sh listar ;;
-    5) read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-crear "$g" ;;
-    6) read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-eliminar "$g" ;;
-    7) read -r -p "Usuario: " u; read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-agregar "$u" "$g" ;;
+    5) read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-crear "$g" || true ;;
+    6) read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-eliminar "$g" || true ;;
+    7) read -r -p "Usuario: " u; mostrar_grupos; read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-agregar "$u" "$g" || true ;;
     8) ./scripts/users.sh grupos ;;
     9) sudo ./scripts/permissions.sh aplicar ;;
     10) read -r -p "Ruta: " r; read -r -p "Grupo: " g; read -r -p "Modo: " m; sudo ./scripts/permissions.sh ruta "$r" "$g" "$m" ;;
