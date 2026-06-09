@@ -5,11 +5,11 @@ services:
     restart: unless-stopped
 
     volumes:
-      - ./data/logs:/var/log/sentry
+      - ./config:/app/config
+      - ./data/empresa:/empresa
+      - ./data/logs:/app/data/logs
     ports:
       - "2222:22"
-    expose:
-      - "22"
     networks:
       - sentry_net
 

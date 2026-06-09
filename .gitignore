@@ -1,13 +1,14 @@
 .env
 propuesta.md
+config/passwords.conf
 
 bin/
 
 data/logs/*
 !data/logs/.gitkeep
 
-data/reports/*
-!data/reports/.gitkeep
+data/empresa/*
+!data/empresa/.gitkeep
 
 runtime/pids/*
 !runtime/pids/.gitkeep

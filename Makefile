@@ -14,10 +14,9 @@ SCRIPTS := \
 	$(SCRIPTS_DIR)/admin.sh \
 	$(SCRIPTS_DIR)/setup_server.sh \
 	$(SCRIPTS_DIR)/users.sh \
-	$(SCRIPTS_DIR)/permissions.sh \
 	$(SCRIPTS_DIR)/ssh_audit.sh \
 	$(SCRIPTS_DIR)/monitor.sh \
-	$(SCRIPTS_DIR)/log_analyzer.sh
+	$(SCRIPTS_DIR)/entrypoint.sh
 
 .PHONY: all build clean test check scripts docker-config docker-build up down logs help
 
@@ -56,7 +55,7 @@ logs:
 
 help:
 	@printf '%s\n' \
-		'Targets disponibles:' \
+		'Comandos disponibles:' \
 		'  make build         Compila bin/checksum desde src/checksum.c' \
 		'  make clean         Elimina binarios generados' \
 		'  make check         Valida scripts Bash y docker-compose.yml' \
@@ -64,5 +63,5 @@ help:
 		'  make docker-build  Construye las imagenes Docker' \
 		'  make up            Levanta los servicios en segundo plano' \
 		'  make down          Detiene los servicios' \
-		'  make logs          Muestra logs de Docker Compose' \
+		'  make logs          Muestra bitacoras de Docker Compose' \
 		'  make help          Muestra esta ayuda'

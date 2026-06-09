@@ -1,6 +1,7 @@
 .git
 .env
 .gitignore
+config/passwords.conf
 *.md
+data/empresa/*
 data/logs/*
-data/reports/*

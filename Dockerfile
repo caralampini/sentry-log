@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
-    openssh-server gcc make sudo \
+    openssh-server gcc make sudo nano less tree procps \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /var/run/sshd
@@ -26,4 +26,4 @@ RUN make build && \
     chown profesor:profesor /home/profesor/.bash_profile
 
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/app/scripts/entrypoint.sh"]

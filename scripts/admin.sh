@@ -6,9 +6,17 @@ mostrar_grupos() {
   echo "Grupos de la empresa configurados:"
   while IFS=: read -r dept group path mode; do
     [[ -z "${dept:-}" || "$dept" =~ ^# ]] && continue
-    echo "  $group ($dept)"
+    echo "  $group ($dept) ruta=$path modo=$mode"
   done < config/departments.conf
   echo
+}
+
+ver_checksum() {
+  echo "Generando checksums de archivos vigilados..."
+  sudo ./scripts/monitor.sh init
+  echo
+  echo "Checksums actuales de archivos del sistema, configuracion y /empresa:"
+  sudo cat runtime/state/checksums.db
 }
 
 crear_usuario() {
@@ -37,42 +45,47 @@ crear_usuario() {
 
 while true; do
   clear
+  cat <<'EOF'
+   _____ ______ _   _ _______ _______     __   _____ ____  _____  _____  
+  / ____|  ____| \ | |__   __|  __ \ \   / /  / ____/ __ \|  __ \|  __ \ 
+ | (___ | |__  |  \| |  | |  | |__) \ \_/ /  | |   | |  | | |__) | |__) |
+  \___ \|  __| | . ` |  | |  |  _  / \   /   | |   | |  | |  _  /|  ___/ 
+  ____) | |____| |\  |  | |  | | \ \  | |    | |___| |__| | | \ \| |     
+ |_____/|______|_| \_|  |_|  |_|  \_\ |_|     \_____\____/|_|  \_\_|     
+
+EOF
   echo "Sentry Log - Menu de Administrador"
-  echo "1) Preparar servidor"
-  echo "2) Crear usuario"
-  echo "3) Eliminar usuario"
-  echo "4) Listar usuarios"
-  echo "5) Crear grupo"
-  echo "6) Eliminar grupo"
-  echo "7) Agregar usuario a grupo"
-  echo "8) Listar grupos"
-  echo "9) Aplicar permisos"
-  echo "10) Cambiar permisos de una ruta"
-  echo "11) Ver intentos SSH fallidos"
-  echo "12) Generar reporte"
-  echo "13) Iniciar monitor"
-  echo "14) Detener monitor"
-  echo "15) Estado del monitor"
-  echo "0) Salir"
+  echo "1) Agregar usuario"
+  echo "2) Eliminar usuario"
+  echo "3) Agregar grupo"
+  echo "4) Eliminar grupo"
+  echo "5) Listar Usuarios"
+  echo "6) Listar Grupos"
+  echo "7) Ver intentos fallidos de acceso SSH"
+  echo "8) Ver checksums de archivos vigilados"
+  echo "9) Iniciar monitor en segundo plano"
+  echo "10) Detener monitor"
+  echo "11) Ver estado del monitor"
+  echo "12) Ver bitacora del monitor"
+  echo "13) Acceder a terminal"
+  echo "14) Cerrar sesion"
   read -r -p "Opcion: " op
 
   case "$op" in
-    1) sudo ./scripts/setup_server.sh ;;
-    2) crear_usuario ;;
-    3) read -r -p "Usuario: " u; sudo ./scripts/users.sh eliminar "$u" || true ;;
-    4) ./scripts/users.sh listar ;;
-    5) read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-crear "$g" || true ;;
-    6) read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-eliminar "$g" || true ;;
-    7) read -r -p "Usuario: " u; mostrar_grupos; read -r -p "Grupo: " g; sudo ./scripts/users.sh grupo-agregar "$u" "$g" || true ;;
-    8) ./scripts/users.sh grupos ;;
-    9) sudo ./scripts/permissions.sh aplicar ;;
-    10) read -r -p "Ruta: " r; read -r -p "Grupo: " g; read -r -p "Modo: " m; sudo ./scripts/permissions.sh ruta "$r" "$g" "$m" ;;
-    11) ./scripts/ssh_audit.sh ;;
-    12) ./scripts/log_analyzer.sh ;;
-    13) ./scripts/monitor.sh start ;;
-    14) ./scripts/monitor.sh stop ;;
-    15) ./scripts/monitor.sh status ;;
-    0) exit 0 ;;
+    1) crear_usuario ;;
+    2) ./scripts/users.sh listar; read -r -p "Usuario a eliminar: " u; sudo ./scripts/users.sh eliminar "$u" || true ;;
+    3) read -r -p "Grupo: " g; read -r -p "Ruta asignada (ej. /empresa/nuevo): " r; sudo ./scripts/users.sh grupo-crear "$g" "$r" || true ;;
+    4) ./scripts/users.sh grupos; read -r -p "Grupo a eliminar: " g; sudo ./scripts/users.sh grupo-eliminar "$g" || true ;;
+    5) ./scripts/users.sh listar ;;
+    6) ./scripts/users.sh grupos ;;
+    7) sudo ./scripts/ssh_audit.sh ;;
+    8) ver_checksum ;;
+    9) sudo ./scripts/monitor.sh start ;;
+    10) sudo ./scripts/monitor.sh stop ;;
+    11) sudo ./scripts/monitor.sh status ;;
+    12) sudo ./scripts/monitor.sh log ;;
+    13) bash ;;
+    14) exit 0 ;;
     *) echo "Opcion invalida" ;;
   esac
 
